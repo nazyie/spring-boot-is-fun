@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Spring IOC
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
  * - We will register that object in the container
  * - So we can easily call that object without relying on the container
  */
-@Component
+@Service
 public class UserServiceImp implements UserService{
 
     private final User DEFAULT_USER = User.builder().name("Engku Nazri").age(99).build();

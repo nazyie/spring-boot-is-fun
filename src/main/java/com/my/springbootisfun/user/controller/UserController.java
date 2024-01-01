@@ -3,10 +3,8 @@ package com.my.springbootisfun.user.controller;
 import com.my.springbootisfun.user.model.User;
 import com.my.springbootisfun.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -31,8 +29,42 @@ public class UserController {
         return service.getUserInfo();
     }
 
+    @GetMapping("/{userId}")
+    public User getUserSpecific(@PathVariable String userId) {
+        System.out.println("Getting the user information for user id -> " + userId);
+        User user = service.getUserInfo();
+        user.setName("Tampered for specific user");
+        return user;
+    }
+
+    /**
+     * Annotation
+     * ==========
+     * - Common annotation for creating the API
+     *
+     * @RestController - to annotate the RestController
+     * @RequestMapping("/api/user") - to register the route mapping
+     * @PostMapping
+     * @GetMapping("/{user}")
+     * @DeleteMapping
+     * @PatchMapping
+     * @RequestBody
+     * @PathVariable
+     *
+     * @Component - to create component class
+     * @Repository - to create the repository class
+     * @Services - to create service class
+     * @Bean - to register the bean (generic)
+     * @Configuration - for configuration class
+     *
+     * @Transactional - to allow capabilities to rollback the transaction of the action if any of the item is failing
+     *
+     *
+     * @Autowired - to inject dependencies
+     */
     @PostMapping
-    public User updateUser(User payload) {
+    @Transactional
+    public User updateUser(@RequestBody User payload) {
         return service.updateUserInfo(payload);
     }
 }

@@ -2,6 +2,7 @@ package com.my.springbootisfun.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +34,14 @@ import org.springframework.security.web.SecurityFilterChain;
  *  3. Authentication this is to construct the data for the authenticated user (principle, credential)
  *  !! Do not overwhelmn by seeing the class name that exist in this class. It just boilerplate class
  */
+
+/**
+ * Authorization
+ * =============
+ * - There are various of the way for you to authorize the user
+ *          - @PreAuthorize("hasRole('USER') and hasAuthority('WRITE_PRIVILEDGES') and hasPermission(#id, 'WRITE')")
+ *          - Thru the SecurityFilterChain using the
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -40,14 +49,15 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-//                .csrf().disable() - depreciated
-//                .cors().disable() - depreciated
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
                         authorize
                                 .requestMatchers("/login").permitAll()
-                                .anyRequest().authenticated()
+//                                .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/user").hasAuthority("READ")
+                                .anyRequest()
+                                .authenticated()
                 )
 //                .formLogin(Customizer.withDefaults()) - this will generate the default page for login that can be access thru /login
                 .httpBasic(Customizer.withDefaults()) // this is requiring the basic auth
@@ -65,12 +75,14 @@ public class SecurityConfiguration {
                 .username("user")
                 .password(passwordEncoder().encode("password"))
                 .roles("USER")
+                .authorities("READ")
                 .build();
 
         UserDetails user2 = User.builder()
                 .username("admin")
                 .password(passwordEncoder().encode("password"))
                 .roles("ADMIN")
+                .authorities("READ", "WRITE")
                 .build();
 
         return new InMemoryUserDetailsManager(user1, user2);

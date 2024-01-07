@@ -3,10 +3,13 @@ package com.my.springbootisfun.user.controller;
 import com.my.springbootisfun.user.model.User;
 import com.my.springbootisfun.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@EnableMethodSecurity
 @RequestMapping("/user")
 public class UserController {
 
@@ -25,7 +28,9 @@ public class UserController {
 //    }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('READ')")
     public User getUser(){
+        System.out.println("Testing");
         return service.getUserInfo();
     }
 
@@ -63,7 +68,8 @@ public class UserController {
      * @Autowired - to inject dependencies
      */
     @PostMapping
-    @Transactional
+//    @Transactional
+    @PreAuthorize("hasAuthority('WRITE')")
     public User updateUser(@RequestBody User payload) {
         return service.updateUserInfo(payload);
     }
